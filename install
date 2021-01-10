@@ -23,7 +23,7 @@ chmod +x /etc/network/if-up.d/iptables
 MYIP=`curl -s ifconfig.me`;
 MYIP2="s/xxxxxxxxx/$MYIP/g";
 service openvpn restart
-wget -O /var/www/html/tcp.ovpn "https://raw.githubusercontent.com/insanpendosa/zero/main/client.conf"
+wget -O /var/www/html/tcp.ovpn "https://raw.githubusercontent.com/bengali89/zero/main/client.conf"
 wget -O /var/www/html/udp.ovpn "https://raw.githubusercontent.com/BangJaguh/mulu/main/client2.conf"
 sed -i $MYIP2 /var/www/html/tcp.ovpn;
 sed -i $MYIP2 /var/www/html/udp.ovpn;

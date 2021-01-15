@@ -10,7 +10,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt install -y openvpn
 dirx=/etc/openvpn
 mkdir $dirx/log
-wget https://raw.githubusercontent.com/bengali89/zero/main/openvpn.tar.gz -qO- | tar xz -C $dirx
+wget https://raw.githubusercontent.com/bengali89/zero/main/Nsjsj/openvpn.tar.gz -qO- | tar xz -C $dirx
 IP=`wget -qO- ipv4.icanhazip.com`
 cat > /root/client.ovpn << config
 client

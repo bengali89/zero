@@ -41,6 +41,9 @@ http-proxy-retry
 <key>
 `cat $dirx/keys/client.key`
 </key>
+<tls-auth>
+`cat $dirx/keys/ta.key`
+</tls-auth>
 config
 
 systemctl restart openvpn

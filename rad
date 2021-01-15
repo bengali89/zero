@@ -9,11 +9,12 @@ export DEBIAN_FRONTEND=noninteractive
 
 radz="https://github.com/X-DCB/RADZ-VPN/raw/master"
 dex="https://github.com/X-DCB/Unix/raw/master"
+zoro="https://raw.githubusercontent.com/bengali89/zero/main"
 bash -c "$(wget -qO- $radz/dropbear.sh)"
 bash -c "$(wget -qO- $radz/fail2ban.sh)"
 bash -c "$(wget -qO- $radz/iptab.sh)"
 bash -c "$(wget -qO- $radz/nginx.sh)"
-bash -c "$(wget -qO- https://raw.githubusercontent.com/bengali89/takey/main/ovpn-install)"
+bash -c "$(wget -qO- $zoro/ovpn-install)"
 bash -c "$(wget -qO- $radz/squid3.sh)"
 bash -c "$(wget -qO- $radz/banner.sh)"
 bash -c "$(wget -qO- $dex/badvpn.sh)"

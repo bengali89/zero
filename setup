@@ -38,20 +38,20 @@ Dropbear_Port2='843'
 # Stunnel Ports
 Stunnel_Port1='445' # through Dropbear
 Stunnel_Port2='444' # through OpenSSH
-Stunnel_Port3='443' # through OpenVPN
+Stunnel_Port3='448' # through OpenVPN
 
 # OpenVPN Ports
-OpenVPN_Port1='110'
+OpenVPN_Port1='443'
 OpenVPN_Port2='1194' # take note when you change this port, openvpn sun noload config will not work
 
 # Privoxy Ports (must be 1024 or higher)
-Privoxy_Port1='9009'
+Privoxy_Port1='8118'
 Privoxy_Port2='9090'
 # OpenVPN Config Download Port
-OvpnDownload_Port='86' # Before changing this value, please read this document. It contains all unsafe ports for Google Chrome Browser, please read from line #23 to line #89: https://chromium.googlesource.com/chromium/src.git/+/refs/heads/master/net/base/port_util.cc
+OvpnDownload_Port='81' # Before changing this value, please read this document. It contains all unsafe ports for Google Chrome Browser, please read from line #23 to line #89: https://chromium.googlesource.com/chromium/src.git/+/refs/heads/master/net/base/port_util.cc
 
 # Server local time
-MyVPS_Time='Asia/Manila'
+MyVPS_Time='Asia/Kuala_Lumpur'
 #############################
 
 
@@ -234,8 +234,8 @@ accept = Stunnel_Port2
 connect = 127.0.0.1:openssh_port_c
 
 [openvpn]
-accept = 443
-connect = 127.0.0.1:110
+accept = 448
+connect = 127.0.0.1:443
 MyStunnelC
 
  # setting stunnel ports
@@ -637,8 +637,8 @@ myPrivoxy
 # Squid Ports (must be 1024 or higher)
  Proxy_Port1='8000'
  Proxy_Port2='8080'
- Proxy_Port3='80'
- Proxy_Port4='3128'
+ Proxy_Port3='3128'
+ Proxy_Port4='8888'
  cat <<mySquid > /etc/squid/squid.conf
 acl VPN dst $(wget -4qO- http://ipinfo.io/ip)/32
 http_access allow VPN
@@ -717,9 +717,8 @@ comp-lzo
 setenv CLIENT_CERT 0
 reneg-sec 0
 verb 1
-http-proxy $(curl -s http://ipinfo.io/ip || wget -q http://ipinfo.io/ip) $Proxy_Port
-http-proxy-option CUSTOM-HEADER Host redirect.googlevideo.com
-http-proxy-option CUSTOM-HEADER X-Forwarded-For redirect.googlevideo.com
+http-proxy $(curl -s http://ipinfo.io/ip || wget -q http://ipinfo.io/ip) $Proxy_Port3
+http-proxy-retry
 
 <auth-user-pass>
 sam
@@ -775,6 +774,8 @@ client
 dev tun
 proto tcp
 remote $IPADDR $OpenVPN_Port1
+http-proxy $(curl -s http://ipinfo.io/ip || wget -q http://ipinfo.io/ip) $Proxy_Port2
+http-proxy-retry
 remote-cert-tls server
 resolv-retry infinite
 nobind
@@ -792,9 +793,6 @@ comp-lzo
 setenv CLIENT_CERT 0
 reneg-sec 0
 verb 1
-http-proxy $(curl -s http://ipinfo.io/ip || wget -q http://ipinfo.io/ip) $Proxy_Port
-http-proxy-option CUSTOM-HEADER Host tweetdeck.twitter.com
-http-proxy-option CUSTOM-HEADER X-Forwarded-For tweetdeck.twitter.com
 
 <auth-user-pass>
 sam
@@ -812,7 +810,8 @@ cat <<EOF17> /var/www/openvpn/SunNoLoad.ovpn
 client
 dev tun
 proto tcp-client
-remote $IPADDR $OpenVPN_Port1
+remote 127.0.0.1 443
+route $IPADDR 255.255.255.255 net_gateway
 remote-cert-tls server
 bind
 float

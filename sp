@@ -261,6 +261,9 @@ key server.key
 dh dh.pem
 auth SHA512
 tls-crypt tc.key
+verify-client-cert none
+username-as-common-name
+plugin /usr/lib/openvpn/openvpn-plugin-auth-pam.so login
 topology subnet
 server 10.8.0.0 255.255.255.0" > /etc/openvpn/server/server.conf
 	# IPv6
@@ -311,8 +314,6 @@ server 10.8.0.0 255.255.255.0" > /etc/openvpn/server/server.conf
 cipher AES-256-CBC
 user nobody
 group $group_name
-client-cert-not-required
-username-as-common-name
 persist-key
 persist-tun
 status openvpn-status.log

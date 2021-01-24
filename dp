@@ -163,12 +163,12 @@ wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/ara-ranger
 
 # install openvpn
 apt-get -y install openvpn
-wget -O /etc/openvpn/openvpn.tar "https://raw.githubusercontent.com/bengali89/takey/main/openvpn-debian.tar"
+wget -O /etc/openvpn/openvpn.tar "https://raw.githubusercontent.com/gatotx/AutoScriptDebian9/main/Res/OpenVPN/openvpn-debian.tar"
 cd /etc/openvpn/
 tar xf openvpn.tar
 
 # openvpn config
-cat > /home/vps/public_html/client.ovpn <<-END
+cat > /home/vps/public_html/Dopekid.ovpn <<-END
 # OpenVPN Configuration By JokerTeam
 
 client
@@ -188,15 +188,9 @@ remote-cert-tls server
 cipher AES-256-GCM
 
 END
-echo '<ca>' >> /home/vps/public_html/client.ovpn
-cat /etc/openvpn/keys/ca.crt >> /home/vps/public_html/client.ovpn
-echo '</ca>' >> /home/vps/public_html/client.ovpn
-echo '<cert>' >> /home/vps/public_html/client.ovpn
-cat /etc/openvpn/keys/server.crt >> /home/vps/public_html/client.ovpn
-echo '</cert>' >> /home/vps/public_html/client.ovpn
-echo '<key>' >> /home/vps/public_html/client.ovpn
-cat /etc/openvpn/keys/server.key >> /home/vps/public_html/client.ovpn
-echo '</key>' >> /home/vps/public_html/client.ovpn
+echo '<ca>' >> /home/vps/public_html/Dopekid.ovpn
+cat /etc/openvpn/keys/ca.crt >> /home/vps/public_html/Dopekid.ovpn
+echo '</ca>' >> /home/vps/public_html/Dopekid.ovpn
 cd /home/vps/public_html/
 tar -czf /home/vps/public_html/DopekidVPN.tar.gz Dopekid.ovpn
 tar -czf /home/vps/public_html/Dopekid.tar.gz Dopekid.ovpn
@@ -239,7 +233,17 @@ ufw disable
 echo 1 > /proc/sys/net/ipv4/ip_forward
 sed -i 's|#net.ipv4.ip_forward=1|net.ipv4.ip_forward=1|' /etc/sysctl.conf
 
-
+# OpenVPN monitoring
+apt-get install -y gcc libgeoip-dev python-virtualenv python-dev geoip-database-extra uwsgi uwsgi-plugin-python
+wget -O /srv/openvpn-monitor.tar "https://raw.githubusercontent.com/gatotx/AutoScriptDebian9/main/Res/Panel/openvpn-monitor.tar"
+cd /srv
+tar xf openvpn-monitor.tar
+cd openvpn-monitor
+virtualenv .
+. bin/activate
+pip install -r requirements.txt
+wget -O /etc/uwsgi/apps-available/openvpn-monitor.ini "https://raw.githubusercontent.com/gatotx/AutoScriptDebian9/main/Res/Panel/openvpn-monitor.ini"
+ln -s /etc/uwsgi/apps-available/openvpn-monitor.ini /etc/uwsgi/apps-enabled/
 # install stunnel
 apt-get install stunnel4 -y
 cat > /etc/stunnel/stunnel.conf <<-END

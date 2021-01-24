@@ -30,36 +30,19 @@ MYIP=$(wget -qO- ipv4.icanhazip.com);rpstat='';shre='#http_access'
 [[ $shr =~ N|n ]] && shre='http_access' && rpstat=' not'
 # UPDATE SOURCE LIST
 OPT='-o Acquire::Check-Valid-Until=false -yq -o DPkg::Options::=--force-confdef -o DPkg::Options::=--force-confnew --allow-unauthenticated'
-# ADD PHP 5.6 SOURCE
-sed -i 's/jessie/stretch/g' /etc/apt/sources.list
-sed -i 's/xenial/bionic/g' /etc/apt/sources.list
-apt-get update
-apt-get install $OPT apt-transport-https software-properties-common
-# INSTALL REQUIREMENTS
-if [[ `lsb_release -si` = Debian ]];then
-	wget https://packages.sury.org/php/apt.gpg -qO- | apt-key add -
-	echo "deb https://packages.sury.org/php/ `lsb_release -sc` main" > /etc/apt/sources.list.d/php5.list
-else
-	add-apt-repository -y ppa:ondrej/php; fi
-apt update
-yes | apt $OPT dist-upgrade
-if [[ `lsb_release -sr` =~ 9.|18. ]]; then
-	apt remove --purge apache* $OPT
-	apt remove --purge php7* $OPT
-	apt autoremove $OPT
-	apt autoclean $OPT;fi
-yes | apt $OPT upgrade
-apt-get $OPT install nginx php5.6 php5.6-fpm php5.6-cli php5.6-mysql php5.6-mcrypt mariadb-server openvpn squid
-# START INSTALLATION
-# WEB DATA
-apt-get install curl
-apt-get install apache2
-rm /var/www/html/index.html
-rm /var/www/html/index.nginx-debian.html
-wget https://raw.githubusercontent.com/BangJaguh/cina/main/index.html
-cp index.html /var/www/html
-[Install]
-WantedBy=network.target" > /etc/systemd/system/iptab.service
+# nginx
+apt-get -y install nginx
+apt-get -y install php7.0-fpm
+apt-get -y install php7.0-cli
+rm /etc/nginx/sites-enabled/default
+rm /etc/nginx/sites-available/default
+wget -O /etc/php/7.0/fpm/pool.d/www.conf "https://raw.githubusercontent.com/KeningauVPS/sslmode/master/www.conf"
+mkdir -p /home/vps/public_html
+echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
+wget -O /home/vps/public_html/index.html https://raw.githubusercontent.com/padubang/secret/main/index.html
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/ara-rangers/vps/master/vps.conf"
+sed -i 's/listen = \/var\/run\/php7.0-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php/7.0/fpm/pool.d/www.conf
+service php7.0-fpm restart
 echo '#!/bin/bash
 iptables -F
 iptables -X
@@ -87,8 +70,8 @@ sq=$([ -d /etc/squid ] && echo squid || echo squid3)
 [ ! -f /etc/$sq/squid.confx ] && mv /etc/$sq/squid.conf /etc/$sq/squid.confx
 wget -qO- https://raw.githubusercontent.com/X-DCB/Unix/master/openvpn/squid.conf | sed -e "s/#http_access/$shre/g" | sed -e "s/x.x.x.x/$MYIP/g" > /etc/$sq/squid.conf
 # etc
-wget -O /var/www/html/client.ovpn "https://gakod.com/script/X-DCB/openvpn/client.ovpn"
-sed -i "s/ipserver/$myip/g" /var/www/html/client.ovpn
+wget -O /home/vps/public_html/client.ovpn "https://gakod.com/script/X-DCB/openvpn/client.ovpn"
+sed -i "s/ipserver/$myip/g" /home/vps/public_html/client.ovpn
 # set timezone
 cp /usr/share/zoneinfo/Asia/Kuala_Lumpur /etc/localtime
 # reload daemon
